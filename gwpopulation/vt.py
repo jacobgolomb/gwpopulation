@@ -5,8 +5,10 @@ Sensitive volume estimation.
 import numpy as np
 from bilby.hyper.model import Model
 
-from .cupy_utils import trapz, xp
 from .models.redshift import _Redshift, total_four_volume
+from .utils import to_number
+
+xp = np
 
 
 class _BaseVT(object):
@@ -40,14 +42,16 @@ class GridVT(_BaseVT):
         self.values = {key: xp.unique(self.data[key]) for key in self.data}
         shape = np.array(list(self.data.values())[0].shape)
         lens = {key: len(self.values[key]) for key in self.data}
-        self.axes = {int(np.where(shape == lens[key])[0]): key for key in self.data}
+        self.axes = {int(np.where(shape == lens[key])[0][0]): key for key in self.data}
         self.ndim = len(self.axes)
 
     def __call__(self, parameters):
         self.model.parameters.update(parameters)
         vt_fac = self.model.prob(self.data) * self.vts
         for ii in range(self.ndim):
-            vt_fac = trapz(vt_fac, self.values[self.axes[self.ndim - ii - 1]], axis=-1)
+            vt_fac = xp.trapz(
+                vt_fac, self.values[self.axes[self.ndim - ii - 1]], axis=-1
+            )
         return vt_fac
 
 
@@ -123,19 +127,19 @@ class ResamplingVT(_BaseVT):
         if not self.marginalize_uncertainty:
             mu, var = self.detection_efficiency(parameters)
             if self.enforce_convergence:
-                converged = self.check_convergence(mu, var)
-                if not converged:
-                    return xp.inf, var
+                _, correction = self.check_convergence(mu, var)
+                mu += correction
             return mu, var
         else:
             vt_factor = self.vt_factor(parameters)
             return vt_factor
 
     def check_convergence(self, mu, var):
-        if mu**2 <= 4 * self.n_events * var:
-            return False
-        else:
-            return True
+        converged = mu**2 > 4 * self.n_events * var
+        return (
+            converged,
+            xp.nan_to_num(xp.inf * (1 - converged), nan=0, posinf=xp.inf),
+        )
 
     def vt_factor(self, parameters):
         """
@@ -152,20 +156,20 @@ class ResamplingVT(_BaseVT):
             The population parameters
         """
         mu, var = self.detection_efficiency(parameters)
-        converged = self.check_convergence(mu, var)
-        if not converged:
-            return xp.inf
+        _, correction = self.check_convergence(mu, var)
         n_effective = mu**2 / var
-        vt_factor = mu / np.exp((3 + self.n_events) / 2 / n_effective)
+        vt_factor = mu / xp.exp((3 + self.n_events) / 2 / n_effective)
+        vt_factor += correction
         return vt_factor
 
     def detection_efficiency(self, parameters):
         self.model.parameters.update(parameters)
         weights = self.model.prob(self.data) / self.data["prior"]
-        mu = float(xp.sum(weights) / self.total_injections)
-        var = float(
+        mu = to_number(xp.sum(weights) / self.total_injections, float)
+        var = to_number(
             xp.sum(weights**2) / self.total_injections**2
-            - mu**2 / self.total_injections
+            - mu**2 / self.total_injections,
+            float,
         )
         return mu, var
 

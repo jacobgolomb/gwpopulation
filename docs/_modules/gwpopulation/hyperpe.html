@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwpopulation.hyperpe &mdash; GWPopulation 0.1.dev1+g42b6fa7 documentation</title>
+  <title>gwpopulation.hyperpe &mdash; GWPopulation 0.1.dev1+g2d43f7c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -14,7 +14,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=528aeb57"></script>
+        <script src="../../_static/documentation_options.js?v=0b821790"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -48,8 +48,8 @@
               <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.models.html">gwpopulation.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.backend.html">gwpopulation.backend</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.conversions.html">gwpopulation.conversions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.cupy_utils.html">gwpopulation.cupy_utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.hyperpe.html">gwpopulation.hyperpe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.utils.html">gwpopulation.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.vt.html">gwpopulation.vt</a></li>
@@ -95,8 +95,9 @@
 <span class="kn">from</span> <span class="nn">bilby.core.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">bilby.hyper.model</span> <span class="kn">import</span> <span class="n">Model</span>
 
-<span class="kn">from</span> <span class="nn">.cupy_utils</span> <span class="kn">import</span> <span class="n">CUPY_LOADED</span><span class="p">,</span> <span class="n">to_numpy</span><span class="p">,</span> <span class="n">xp</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_name</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_name</span><span class="p">,</span> <span class="n">to_number</span><span class="p">,</span> <span class="n">to_numpy</span>
+
+<span class="n">xp</span> <span class="o">=</span> <span class="n">np</span>
 
 
 <div class="viewcode-block" id="HyperparameterLikelihood">
@@ -157,8 +158,13 @@
 <span class="sd">            If the uncertainty is larger than this value a log likelihood of</span>
 <span class="sd">            -inf will be returned. Default = inf</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">cupy</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">CUPY_LOADED</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Cannot import cupy, falling back to numpy.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cupy</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">.backend</span> <span class="kn">import</span> <span class="n">set_backend</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">set_backend</span><span class="p">(</span><span class="s2">&quot;cupy&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cupy not available, using </span><span class="si">{</span><span class="n">xp</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">samples_per_posterior</span> <span class="o">=</span> <span class="n">max_samples</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample_posteriors</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="n">max_samples</span><span class="p">)</span>
@@ -224,17 +230,16 @@
         <span class="n">variance</span> <span class="o">+=</span> <span class="n">selection_variance</span>
         <span class="n">ln_l</span> <span class="o">+=</span> <span class="n">selection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pop_added</span><span class="p">(</span><span class="n">added_keys</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ln_l</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ln_l</span><span class="p">,</span> <span class="n">to_number</span><span class="p">(</span><span class="n">variance</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HyperparameterLikelihood.log_likelihood_ratio">
 <a class="viewcode-back" href="../../_autosummary/gwpopulation.hyperpe.HyperparameterLikelihood.html#gwpopulation.hyperpe.HyperparameterLikelihood.log_likelihood_ratio">[docs]</a>
     <span class="k">def</span> <span class="nf">log_likelihood_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ln_l</span><span class="p">,</span> <span class="n">variance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ln_likelihood_and_variance</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">variance</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_variance</span> <span class="ow">or</span> <span class="n">xp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ln_l</span><span class="p">):</span>
-            <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_inf</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">ln_l</span><span class="p">))</span></div>
+        <span class="n">ln_l</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">ln_l</span><span class="p">,</span> <span class="n">nan</span><span class="o">=-</span><span class="n">xp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+        <span class="n">ln_l</span> <span class="o">-=</span> <span class="n">xp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">inf</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum_uncertainty</span> <span class="o">&lt;</span> <span class="n">variance</span><span class="p">),</span> <span class="n">nan</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">to_number</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">ln_l</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HyperparameterLikelihood.noise_log_likelihood">
@@ -270,7 +275,9 @@
         <span class="n">selection</span><span class="p">,</span> <span class="n">variance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selection_function_with_uncertainty</span><span class="p">()</span>
         <span class="n">total_selection</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">n_posteriors</span> <span class="o">*</span> <span class="n">xp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">return_uncertainty</span><span class="p">:</span>
-            <span class="n">total_variance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_posteriors</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">variance</span> <span class="o">/</span> <span class="n">selection</span><span class="o">**</span><span class="mi">2</span>
+            <span class="n">total_variance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_posteriors</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">xp</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+                <span class="n">variance</span><span class="p">,</span> <span class="n">selection</span><span class="o">**</span><span class="mi">2</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="n">total_selection</span><span class="p">,</span> <span class="n">total_variance</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">total_selection</span>
@@ -445,14 +452,28 @@
         <span class="n">weights</span> <span class="o">=</span> <span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">xp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
         <span class="n">new_idxs</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_posteriors</span><span class="p">):</span>
-            <span class="n">new_idxs</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
-                    <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples_per_posterior</span><span class="p">),</span>
-                    <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">samples_per_posterior</span><span class="p">,</span>
-                    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="n">p</span><span class="o">=</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+            <span class="k">if</span> <span class="s2">&quot;jax&quot;</span> <span class="ow">in</span> <span class="n">xp</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span>
+
+                <span class="n">rng_key</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10000000</span><span class="p">))</span>
+                <span class="n">new_idxs</span> <span class="o">=</span> <span class="n">new_idxs</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+                    <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                        <span class="n">rng_key</span><span class="p">,</span>
+                        <span class="n">xp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples_per_posterior</span><span class="p">),</span>
+                        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples_per_posterior</span><span class="p">,),</span>
+                        <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">p</span><span class="o">=</span><span class="n">weights</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
-            <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_idxs</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                        <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples_per_posterior</span><span class="p">),</span>
+                        <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">samples_per_posterior</span><span class="p">,</span>
+                        <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">p</span><span class="o">=</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
         <span class="n">new_samples</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">key</span><span class="p">:</span> <span class="n">xp</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
                 <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">ii</span><span class="p">,</span> <span class="n">new_idxs</span><span class="p">[</span><span class="n">ii</span><span class="p">]]</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_posteriors</span><span class="p">)]</span>

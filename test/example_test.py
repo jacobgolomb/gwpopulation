@@ -1,16 +1,32 @@
 import glob
+from functools import partial
 
 import bilby
 import numpy as np
 import pandas as pd
+import pytest
+from bilby.core.likelihood import Likelihood
+from bilby.hyper.model import Model
+from jax import jit
 
 import gwpopulation
 
+from . import TEST_BACKENDS
+from .jax_utils import JittedLikelihood, NonCachingModel
 
-def test_likelihood_evaluation():
-    np.random.seed(10)
 
-    model = bilby.hyper.model.Model(
+def _template_likelihod_evaluation(backend, jit):
+    gwpopulation.set_backend(backend)
+    xp = gwpopulation.models.mass.xp
+    bilby.core.utils.random.seed(10)
+    rng = bilby.core.utils.random.rng
+
+    if jit:
+        model_cls = NonCachingModel
+    else:
+        model_cls = Model
+
+    model = model_cls(
         [
             gwpopulation.models.mass.SinglePeakSmoothedMassDistribution(),
             gwpopulation.models.spin.independent_spin_magnitude_beta,
@@ -18,7 +34,7 @@ def test_likelihood_evaluation():
             gwpopulation.models.redshift.PowerLawRedshift(),
         ]
     )
-    vt_model = bilby.hyper.model.Model(
+    vt_model = model_cls(
         [
             gwpopulation.models.mass.SinglePeakSmoothedMassDistribution(),
             gwpopulation.models.spin.independent_spin_magnitude_beta,
@@ -38,25 +54,41 @@ def test_likelihood_evaluation():
         prior=(1, 1),
     )
     posteriors = [
-        pd.DataFrame(
-            {key: np.random.uniform(*bound, 100) for key, bound in bounds.items()}
-        )
+        pd.DataFrame({key: rng.uniform(*bound, 100) for key, bound in bounds.items()})
         for _ in range(10)
     ]
-    vt_data = {key: np.random.uniform(*bound, 10000) for key, bound in bounds.items()}
+    vt_data = {
+        key: xp.asarray(rng.uniform(*bound, 10000)) for key, bound in bounds.items()
+    }
 
     selection = gwpopulation.vt.ResamplingVT(vt_model, vt_data, len(posteriors))
 
     likelihood = gwpopulation.hyperpe.HyperparameterLikelihood(
-        hyper_prior=model, posteriors=posteriors, selection_function=selection
+        hyper_prior=model,
+        posteriors=posteriors,
+        selection_function=selection,
+        cupy=False,
     )
+    if jit:
+        likelihood = JittedLikelihood(likelihood)
 
     priors = bilby.core.prior.PriorDict("priors/bbh_population.prior")
 
     likelihood.parameters.update(priors.sample())
-    assert abs(likelihood.log_likelihood_ratio() - 0.06141098844907589) < 0.01
+    assert abs(likelihood.log_likelihood_ratio() + 1.810695) < 0.01
+    likelihood.posterior_predictive_resample(pd.DataFrame(priors.sample(5)))
+
+
+@pytest.mark.parametrize("backend", TEST_BACKENDS)
+def test_likelihood_evaluation(backend):
+    _template_likelihod_evaluation(backend, False)
+
+
+def test_jit_likelihood():
+    _template_likelihod_evaluation("jax", True)
 
 
 def test_prior_files_load():
     for fname in glob.glob("priors/*.prior"):
-        priors = bilby.core.prior.PriorDict(fname)
+        print(fname)
+        _ = bilby.core.prior.PriorDict(fname)

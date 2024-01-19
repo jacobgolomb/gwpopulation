@@ -2,21 +2,19 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
-try:
-    import cupy as xp
-except ImportError:
-    xp = np
-
 from bilby.core.prior import PriorDict, Uniform
 from bilby.hyper.model import Model
 
+import gwpopulation
 from gwpopulation.hyperpe import HyperparameterLikelihood, RateLikelihood
 from gwpopulation.models.mass import SinglePeakSmoothedMassDistribution
+
+xp = np
 
 
 class Likelihoods(unittest.TestCase):
     def setUp(self):
+        gwpopulation.set_backend("numpy")
         self.params = dict(a=1, b=1, c=1)
         self.model = lambda dataset, a, b, c: dataset["a"]
         one_data = pd.DataFrame({key: xp.ones(500) for key in self.params})
@@ -94,8 +92,11 @@ class Likelihoods(unittest.TestCase):
         self.assertEqual(like.log_likelihood_ratio(), 0.0)
 
     def test_hpe_likelihood_converts_nan_to_neginf(self):
-        like = HyperparameterLikelihood(posteriors=self.data, hyper_prior=self.model)
-        like._get_selection_factor = lambda *args, **kwargs: (np.nan, 0)
+        like = HyperparameterLikelihood(
+            posteriors=self.data,
+            hyper_prior=self.model,
+            selection_function=lambda *args, **kwargs: (np.nan, 0),
+        )
         like.parameters.update(self.params)
         self.assertEqual(like.log_likelihood_ratio(), np.nan_to_num(-np.inf))
 
@@ -120,18 +121,22 @@ class Likelihoods(unittest.TestCase):
         self.assertEqual(like.log_likelihood_ratio(), like.log_likelihood())
 
     def test_hpe_likelihood_population_variance_too_large_returns_neginf(self):
+        xp.random.seed(10)
         self.data[0]["a"] *= xp.random.uniform(0, 2, self.data[0]["a"].shape)
         like = HyperparameterLikelihood(
-            posteriors=self.data, hyper_prior=self.model, maximum_uncertainty=0.01
+            posteriors=self.data, hyper_prior=self.model, maximum_uncertainty=1e-5
         )
         like.parameters.update(self.params)
         self.assertEqual(like.log_likelihood_ratio(), np.nan_to_num(-np.inf))
 
     def test_hpe_likelihood_selection_variance_too_large_returns_neginf(self):
         like = HyperparameterLikelihood(
-            posteriors=self.data, hyper_prior=self.model, maximum_uncertainty=0.1
+            posteriors=self.data,
+            hyper_prior=self.model,
+            maximum_uncertainty=0.1,
+            selection_function=lambda *args, **kwargs: (1e-5, 1),
         )
-        like._get_selection_factor = lambda *args, **kwargs: (0, 1)
+        # like._get_selection_factor = lambda *args, **kwargs: (0, 1)
         like.parameters.update(self.params)
         self.assertEqual(like.log_likelihood_ratio(), np.nan_to_num(-np.inf))
 

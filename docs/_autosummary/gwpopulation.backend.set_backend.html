@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwpopulation.cupy_utils.betaln &mdash; GWPopulation 0.1.dev1+g42b6fa7 documentation</title>
+  <title>gwpopulation.backend.set_backend &mdash; GWPopulation 0.1.dev1+g2d43f7c documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -15,17 +15,15 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=528aeb57"></script>
+        <script src="../_static/documentation_options.js?v=0b821790"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwpopulation.cupy_utils.to_numpy" href="gwpopulation.cupy_utils.to_numpy.html" />
-    <link rel="prev" title="gwpopulation.cupy_utils" href="gwpopulation.cupy_utils.html" /> 
+    <link rel="next" title="gwpopulation.conversions" href="gwpopulation.conversions.html" />
+    <link rel="prev" title="gwpopulation.backend.modules_to_update" href="gwpopulation.backend.modules_to_update.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,16 +51,17 @@
               <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="gwpopulation.models.html">gwpopulation.models</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gwpopulation.backend.html">gwpopulation.backend</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="gwpopulation.backend.disable_cupy.html">gwpopulation.backend.disable_cupy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwpopulation.backend.enable_cupy.html">gwpopulation.backend.enable_cupy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwpopulation.backend.modules_to_update.html">gwpopulation.backend.modules_to_update</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">gwpopulation.backend.set_backend</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gwpopulation.backend.set_backend"><code class="docutils literal notranslate"><span class="pre">set_backend()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="gwpopulation.conversions.html">gwpopulation.conversions</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="gwpopulation.cupy_utils.html">gwpopulation.cupy_utils</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">gwpopulation.cupy_utils.betaln</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#gwpopulation.cupy_utils.betaln"><code class="docutils literal notranslate"><span class="pre">betaln()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="gwpopulation.cupy_utils.to_numpy.html">gwpopulation.cupy_utils.to_numpy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gwpopulation.cupy_utils.trapz.html">gwpopulation.cupy_utils.trapz</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="gwpopulation.hyperpe.html">gwpopulation.hyperpe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gwpopulation.utils.html">gwpopulation.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gwpopulation.vt.html">gwpopulation.vt</a></li>
@@ -86,10 +85,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="gwpopulation.cupy_utils.html">gwpopulation.cupy_utils</a></li>
-      <li class="breadcrumb-item active">gwpopulation.cupy_utils.betaln</li>
+          <li class="breadcrumb-item"><a href="gwpopulation.backend.html">gwpopulation.backend</a></li>
+      <li class="breadcrumb-item active">gwpopulation.backend.set_backend</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/_autosummary/gwpopulation.cupy_utils.betaln.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/_autosummary/gwpopulation.backend.set_backend.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -97,31 +96,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gwpopulation-cupy-utils-betaln">
-<h1>gwpopulation.cupy_utils.betaln<a class="headerlink" href="#gwpopulation-cupy-utils-betaln" title="Link to this heading"></a></h1>
+  <section id="gwpopulation-backend-set-backend">
+<h1>gwpopulation.backend.set_backend<a class="headerlink" href="#gwpopulation-backend-set-backend" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="gwpopulation.cupy_utils.betaln">
-<span class="sig-prename descclassname"><span class="pre">gwpopulation.cupy_utils.</span></span><span class="sig-name descname"><span class="pre">betaln</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwpopulation/cupy_utils.html#betaln"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwpopulation.cupy_utils.betaln" title="Link to this definition"></a></dt>
-<dd><p>Logarithm of the Beta function</p>
-<div class="math notranslate nohighlight">
-\[\ln B(\alpha, \beta) = \frac{\ln\gamma(\alpha)\ln\gamma(\beta)}{\ln\gamma(\alpha + \beta)}\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>alpha: float</strong></dt><dd><p>The Beta alpha parameter (<span class="math notranslate nohighlight">\(\alpha\)</span>)</p>
-</dd>
-<dt><strong>beta: float</strong></dt><dd><p>The Beta beta parameter (<span class="math notranslate nohighlight">\(\beta\)</span>)</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>ln_beta: float, array-like</dt><dd><p>The ln Beta function</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="gwpopulation.backend.set_backend">
+<span class="sig-prename descclassname"><span class="pre">gwpopulation.backend.</span></span><span class="sig-name descname"><span class="pre">set_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'numpy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwpopulation/backend.html#set_backend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwpopulation.backend.set_backend" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 
@@ -129,8 +109,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gwpopulation.cupy_utils.html" class="btn btn-neutral float-left" title="gwpopulation.cupy_utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gwpopulation.cupy_utils.to_numpy.html" class="btn btn-neutral float-right" title="gwpopulation.cupy_utils.to_numpy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwpopulation.backend.modules_to_update.html" class="btn btn-neutral float-left" title="gwpopulation.backend.modules_to_update" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwpopulation.conversions.html" class="btn btn-neutral float-right" title="gwpopulation.conversions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

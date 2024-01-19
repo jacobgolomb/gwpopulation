@@ -9,8 +9,9 @@ from bilby.core.likelihood import Likelihood
 from bilby.core.utils import logger
 from bilby.hyper.model import Model
 
-from .cupy_utils import CUPY_LOADED, to_numpy, xp
-from .utils import get_name
+from .utils import get_name, to_number, to_numpy
+
+xp = np
 
 
 class HyperparameterLikelihood(Likelihood):
@@ -67,8 +68,13 @@ class HyperparameterLikelihood(Likelihood):
             If the uncertainty is larger than this value a log likelihood of
             -inf will be returned. Default = inf
         """
-        if cupy and not CUPY_LOADED:
-            logger.warning("Cannot import cupy, falling back to numpy.")
+        if cupy:
+            from .backend import set_backend
+
+            try:
+                set_backend("cupy")
+            except ImportError:
+                logger.warning(f"Cupy not available, using {xp.__name__}.")
 
         self.samples_per_posterior = max_samples
         self.data = self.resample_posteriors(posteriors, max_samples=max_samples)
@@ -131,14 +137,13 @@ class HyperparameterLikelihood(Likelihood):
         variance += selection_variance
         ln_l += selection
         self._pop_added(added_keys)
-        return ln_l, float(variance)
+        return ln_l, to_number(variance, float)
 
     def log_likelihood_ratio(self):
         ln_l, variance = self.ln_likelihood_and_variance()
-        if variance > self._max_variance or xp.isnan(ln_l):
-            return -self._inf
-        else:
-            return float(xp.nan_to_num(ln_l))
+        ln_l = xp.nan_to_num(ln_l, nan=-xp.inf)
+        ln_l -= xp.nan_to_num(xp.inf * (self.maximum_uncertainty < variance), nan=0)
+        return to_number(xp.nan_to_num(ln_l), float)
 
     def noise_log_likelihood(self):
         return self.total_noise_evidence
@@ -167,7 +172,9 @@ class HyperparameterLikelihood(Likelihood):
         selection, variance = self._selection_function_with_uncertainty()
         total_selection = -self.n_posteriors * xp.log(selection)
         if return_uncertainty:
-            total_variance = self.n_posteriors**2 * variance / selection**2
+            total_variance = self.n_posteriors**2 * xp.divide(
+                variance, selection**2
+            )
             return total_selection, total_variance
         else:
             return total_selection
@@ -331,14 +338,28 @@ class HyperparameterLikelihood(Likelihood):
         weights = (weights.T / xp.sum(weights, axis=-1)).T
         new_idxs = xp.empty_like(weights, dtype=int)
         for ii in range(self.n_posteriors):
-            new_idxs[ii] = xp.asarray(
-                np.random.choice(
-                    range(self.samples_per_posterior),
-                    size=self.samples_per_posterior,
-                    replace=True,
-                    p=to_numpy(weights[ii]),
+            if "jax" in xp.__name__:
+                from jax import random
+
+                rng_key = random.PRNGKey(np.random.randint(10000000))
+                new_idxs = new_idxs.at[ii].set(
+                    random.choice(
+                        rng_key,
+                        xp.arange(self.samples_per_posterior),
+                        shape=(self.samples_per_posterior,),
+                        replace=True,
+                        p=weights[ii],
+                    )
                 )
-            )
+            else:
+                new_idxs[ii] = xp.asarray(
+                    np.random.choice(
+                        range(self.samples_per_posterior),
+                        size=self.samples_per_posterior,
+                        replace=True,
+                        p=to_numpy(weights[ii]),
+                    )
+                )
         new_samples = {
             key: xp.vstack(
                 [self.data[key][ii, new_idxs[ii]] for ii in range(self.n_posteriors)]
