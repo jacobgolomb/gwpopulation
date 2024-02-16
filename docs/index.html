@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to the documentation for GWPopulation! &mdash; GWPopulation 0.1.dev1+g2d43f7c documentation</title>
+  <title>Welcome to the documentation for GWPopulation! &mdash; GWPopulation 0.1.dev1+g37f1b4c documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=0b821790"></script>
+        <script src="_static/documentation_options.js?v=7a6ae9f3"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="_autosummary/gwpopulation.models.html">gwpopulation.models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_autosummary/gwpopulation.backend.html">gwpopulation.backend</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_autosummary/gwpopulation.conversions.html">gwpopulation.conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/gwpopulation.experimental.html">gwpopulation.experimental</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_autosummary/gwpopulation.hyperpe.html">gwpopulation.hyperpe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_autosummary/gwpopulation.utils.html">gwpopulation.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_autosummary/gwpopulation.vt.html">gwpopulation.vt</a></li>
@@ -89,8 +90,9 @@
 <span id="welcome-to-the-documentation-for-gwpopulation"></span><h1>Welcome to the documentation for GWPopulation!<a class="headerlink" href="#module-gwpopulation" title="Link to this heading"></a></h1>
 <section id="gwpopulation">
 <h2>GWPopulation<a class="headerlink" href="#gwpopulation" title="Link to this heading"></a></h2>
-<p>A collection of code for doing population inference with the
-gravitational-wave transient catalogue.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">GWPopulation</span></code> is a Python package for doing population inference
+with the gravitational-wave transient catalogue supporting a range of 
+numpy-like backends.</p>
 <dl class="simple">
 <dt>This includes:</dt><dd><ul class="simple">
 <li><p>commonly used likelihood functions in the Bilby framework.</p></li>
@@ -99,9 +101,6 @@ gravitational-wave transient catalogue.</p>
 </ul>
 </dd>
 </dl>
-<p><code class="code docutils literal notranslate"><span class="pre">GWPopulation</span></code> supports multiple numpy-like backends, including
-<code class="code docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="code docutils literal notranslate"><span class="pre">jax</span></code>, and <code class="code docutils literal notranslate"><span class="pre">cupy</span></code>. The <code class="code docutils literal notranslate"><span class="pre">jax</span></code> and
-<code class="code docutils literal notranslate"><span class="pre">cupy</span></code> backends allow for GPU acceleration.</p>
 <p>The code is hosted at <a class="reference external" href="www.github.com/ColmTalbot/gwpopulation">www.github.com/ColmTalbot/gwpopulation</a> and
 available via <code class="code docutils literal notranslate"><span class="pre">conda-forge</span></code> and <code class="code docutils literal notranslate"><span class="pre">pypi</span></code>.</p>
 </section>
@@ -113,18 +112,21 @@ available via <code class="code docutils literal notranslate"><span class="pre">
 <td><p>Implemented population models.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_autosummary/gwpopulation.backend.html#module-gwpopulation.backend" title="gwpopulation.backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">backend</span></code></a></p></td>
-<td><p></p></td>
+<td><p><code class="code docutils literal notranslate"><span class="pre">GWPopulation</span></code> provides a unified interface to a number of <code class="code docutils literal notranslate"><span class="pre">numpy/scipy</span></code> like APIs.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/gwpopulation.conversions.html#module-gwpopulation.conversions" title="gwpopulation.conversions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conversions</span></code></a></p></td>
 <td><p>Parameter conversions</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/gwpopulation.hyperpe.html#module-gwpopulation.hyperpe" title="gwpopulation.hyperpe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hyperpe</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/gwpopulation.experimental.html#module-gwpopulation.experimental" title="gwpopulation.experimental"><code class="xref py py-obj docutils literal notranslate"><span class="pre">experimental</span></code></a></p></td>
+<td><p>This subpackage contains experimental new features and models that do not have a finalized API.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/gwpopulation.hyperpe.html#module-gwpopulation.hyperpe" title="gwpopulation.hyperpe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hyperpe</span></code></a></p></td>
 <td><p>Likelihoods for population inference</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/gwpopulation.utils.html#module-gwpopulation.utils" title="gwpopulation.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils</span></code></a></p></td>
-<td><p>Helper functions for probability distributions.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/gwpopulation.utils.html#module-gwpopulation.utils" title="gwpopulation.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils</span></code></a></p></td>
+<td><p>Helper functions for probability distributions and backend switching.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/gwpopulation.vt.html#module-gwpopulation.vt" title="gwpopulation.vt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vt</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/gwpopulation.vt.html#module-gwpopulation.vt" title="gwpopulation.vt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vt</span></code></a></p></td>
 <td><p>Sensitive volume estimation.</p></td>
 </tr>
 </tbody>

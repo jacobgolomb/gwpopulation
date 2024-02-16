@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwpopulation.backend &mdash; GWPopulation 0.1.dev1+g2d43f7c documentation</title>
+  <title>gwpopulation.backend &mdash; GWPopulation 0.1.dev1+g37f1b4c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -14,7 +14,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0b821790"></script>
+        <script src="../../_static/documentation_options.js?v=7a6ae9f3"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.models.html">gwpopulation.models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.backend.html">gwpopulation.backend</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.conversions.html">gwpopulation.conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.experimental.html">gwpopulation.experimental</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.hyperpe.html">gwpopulation.hyperpe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.utils.html">gwpopulation.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.vt.html">gwpopulation.vt</a></li>
@@ -90,6 +91,23 @@
 <span class="n">SUPPORTED_BACKENDS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;numpy&quot;</span><span class="p">,</span> <span class="s2">&quot;cupy&quot;</span><span class="p">,</span> <span class="s2">&quot;jax&quot;</span><span class="p">]</span>
 <span class="n">_np_module</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">numpy</span><span class="o">=</span><span class="s2">&quot;numpy&quot;</span><span class="p">,</span> <span class="n">cupy</span><span class="o">=</span><span class="s2">&quot;cupy&quot;</span><span class="p">,</span> <span class="n">jax</span><span class="o">=</span><span class="s2">&quot;jax.numpy&quot;</span><span class="p">)</span>
 <span class="n">_scipy_module</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">numpy</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">,</span> <span class="n">cupy</span><span class="o">=</span><span class="s2">&quot;cupyx.scipy&quot;</span><span class="p">,</span> <span class="n">jax</span><span class="o">=</span><span class="s2">&quot;jax.scipy&quot;</span><span class="p">)</span>
+
+
+<span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">:code:`GWPopulation` provides a unified interface to a number of :code:`numpy/scipy` like APIs.</span>
+
+<span class="s2">The backend can be set using :code:`gwpopulation.set_backend(backend)`, where</span>
+<span class="s2">:code:`backend` is one of :code:`</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SUPPORTED_BACKENDS</span><span class="p">)</span><span class="si">}</span><span class="s2">`.</span>
+
+<span class="s2">Downstream packages can automatically track the active backend using :code:`entry_points`.</span>
+<span class="s2">With this set up, packages can use :code:`xp` and :code:`scs` in specified modules.</span>
+
+<span class="s2">..note::</span>
+<span class="s2">    Each module that wants to use the :code:`GWPopulation` backend must be specified independently</span>
+<span class="s2">    for the automatic propagation to work.</span>
+
+<span class="s2">If there is a backend that you would like to use that is not currently supported, please open an issue.</span>
+<span class="s2">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="modules_to_update">

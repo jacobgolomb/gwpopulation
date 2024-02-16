@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwpopulation.hyperpe &mdash; GWPopulation 0.1.dev1+g2d43f7c documentation</title>
+  <title>gwpopulation.hyperpe &mdash; GWPopulation 0.1.dev1+g37f1b4c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -14,7 +14,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0b821790"></script>
+        <script src="../../_static/documentation_options.js?v=7a6ae9f3"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.models.html">gwpopulation.models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.backend.html">gwpopulation.backend</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.conversions.html">gwpopulation.conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.experimental.html">gwpopulation.experimental</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.hyperpe.html">gwpopulation.hyperpe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.utils.html">gwpopulation.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/gwpopulation.vt.html">gwpopulation.vt</a></li>
@@ -316,17 +317,17 @@
         <span class="n">ln_ls</span><span class="p">,</span> <span class="n">variances</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_per_event_ln_bayes_factors</span><span class="p">(</span>
             <span class="n">return_uncertainty</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
-        <span class="n">total_variance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">variances</span><span class="p">))</span>
+        <span class="n">total_variance</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">variances</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_posteriors</span><span class="p">):</span>
-            <span class="n">sample</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ln_bf_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ln_ls</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
-            <span class="n">sample</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;var_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">variances</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+            <span class="n">sample</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ln_bf_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_number</span><span class="p">(</span><span class="n">ln_ls</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+            <span class="n">sample</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;var_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_number</span><span class="p">(</span><span class="n">variances</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
         <span class="n">selection</span><span class="p">,</span> <span class="n">variance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selection_function_with_uncertainty</span><span class="p">()</span>
         <span class="n">variance</span> <span class="o">/=</span> <span class="n">selection</span><span class="o">**</span><span class="mi">2</span>
         <span class="n">selection_variance</span> <span class="o">=</span> <span class="n">variance</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_posteriors</span><span class="o">**</span><span class="mi">2</span>
         <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;selection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">selection</span>
         <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;selection_variance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">variance</span>
         <span class="n">total_variance</span> <span class="o">+=</span> <span class="n">selection_variance</span>
-        <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;variance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">total_variance</span><span class="p">)</span>
+        <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;variance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_number</span><span class="p">(</span><span class="n">total_variance</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">added_keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">added_keys</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
