@@ -25,6 +25,7 @@ class _Redshift(object):
         self.dvc_dz_ = Planck15.differential_comoving_volume(self.zs_).value * 4 * np.pi
         self.dvc_dz = xp.asarray(self.dvc_dz_)
         self.cached_dvc_dz = None
+        self.skip_norm = False
 
     def __call__(self, dataset, **kwargs):
         return self.probability(dataset=dataset, **kwargs)
@@ -55,7 +56,10 @@ class _Redshift(object):
         return norm
 
     def probability(self, dataset, **parameters):
-        normalisation = self.normalisation(parameters=parameters)
+        if self.skip_norm:
+            normalisation = 1
+        else:
+            normalisation = self.normalisation(parameters=parameters)
         differential_volume = self.differential_spacetime_volume(
             dataset=dataset, **parameters
         )

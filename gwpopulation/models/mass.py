@@ -542,6 +542,7 @@ class BaseSmoothedMassDistribution:
         self.dm = self.m1s[1] - self.m1s[0]
         self.dq = self.qs[1] - self.qs[0]
         self.m1s_grid, self.qs_grid = xp.meshgrid(self.m1s, self.qs)
+        self.skip_norm = False
 
     def __call__(self, dataset, *args, **kwargs):
         beta = kwargs.pop("beta")
@@ -569,7 +570,10 @@ class BaseSmoothedMassDistribution:
         p_m *= self.smoothing(
             dataset["mass_1"], mmin=mmin, mmax=self.mmax, delta_m=delta_m
         )
-        norm = self.norm_p_m1(delta_m=delta_m, **kwargs)
+        if self.skip_norm:
+            norm = 1
+        else:
+            norm = self.norm_p_m1(delta_m=delta_m, **kwargs)
         return p_m / norm
 
     def norm_p_m1(self, delta_m, **kwargs):

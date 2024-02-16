@@ -36,6 +36,7 @@ class HyperparameterLikelihood(Likelihood):
         conversion_function=lambda args: (args, None),
         cupy=True,
         maximum_uncertainty=xp.inf,
+        skip_norm=False,
     ):
         """
         Parameters
@@ -109,6 +110,7 @@ class HyperparameterLikelihood(Likelihood):
         self.n_posteriors = len(posteriors)
         self.maximum_uncertainty = maximum_uncertainty
         self._inf = np.nan_to_num(np.inf)
+        self.skip_norm = skip_norm
 
     __doc__ += __init__.__doc__
 
@@ -140,7 +142,11 @@ class HyperparameterLikelihood(Likelihood):
         return ln_l, to_number(variance, float)
 
     def log_likelihood_ratio(self):
+        if self.skip_norm:
+            self.disable_norm()
         ln_l, variance = self.ln_likelihood_and_variance()
+        if self.skip_norm:
+            self.enable_norm()
         ln_l = xp.nan_to_num(ln_l, nan=-xp.inf)
         ln_l -= xp.nan_to_num(xp.inf * (self.maximum_uncertainty < variance), nan=0)
         return to_number(xp.nan_to_num(ln_l), float)
@@ -373,6 +379,16 @@ class HyperparameterLikelihood(Likelihood):
             return new_samples, weights
         else:
             return new_samples
+
+    def disable_norm(self):
+        for model in self.hyper_prior.models:
+            if hasattr(model, "skip_norm"):
+                model.skip_norm = True
+
+    def enable_norm(self):
+        for model in self.hyper_prior.models:
+            if hasattr(model, "skip_norm"):
+                model.skip_norm = False
 
     @property
     def meta_data(self):
