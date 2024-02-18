@@ -111,6 +111,8 @@ class HyperparameterLikelihood(Likelihood):
         self.maximum_uncertainty = maximum_uncertainty
         self._inf = np.nan_to_num(np.inf)
         self.skip_norm = skip_norm
+        if self.skip_norm:
+            self.set_skip_norm_models()
 
     __doc__ += __init__.__doc__
 
@@ -381,14 +383,23 @@ class HyperparameterLikelihood(Likelihood):
             return new_samples
 
     def disable_norm(self):
-        for model in self.hyper_prior.models:
-            if hasattr(model, "skip_norm"):
-                model.skip_norm = True
+        for model in self.skip_norm_models:
+            model.skip_norm = True
 
     def enable_norm(self):
+        for model in self.skip_norm_models:
+            model.skip_norm = False
+
+    def set_skip_norm_models(self):
+        models = []
         for model in self.hyper_prior.models:
             if hasattr(model, "skip_norm"):
-                model.skip_norm = False
+                models.append(model)
+        if hasattr(self.selection_function, "model"):
+            for model in self.selection_function.model.models:
+                if hasattr(model, "skip_norm"):
+                    models.append(model)
+        self.skip_norm_models = models
 
     @property
     def meta_data(self):
