@@ -297,3 +297,17 @@ def to_numpy(array):
         return np.asarray(array)
     else:
         raise TypeError(f"Cannot convert {type(array)} to numpy array")
+    
+def icdf_powerlaw(unit_value, alpha, low, high):
+    oneplusalpha = 1 + alpha
+    a = low**oneplusalpha
+    b = high**oneplusalpha - a
+    return (a + b * unit_value)**(1/oneplusalpha)
+
+
+def sample_powerlaw(spectral_index, low, high, N):
+    """
+    This is the actual spectral index x^alpha, not the negative of the spectral index
+    """
+    unit_samples = np.random.random(N)
+    return icdf_powerlaw(unit_samples, alpha = spectral_index, low = low, high = high)
