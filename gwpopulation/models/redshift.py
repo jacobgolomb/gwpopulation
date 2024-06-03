@@ -172,6 +172,27 @@ def MadauDickinsonSFR(z):
     return (1+z)**2.7 * (1 + ((1+z)/2.9)**5.6)**-1
 
 class DelayTimeRedshift(_Redshift):
+    r"""
+    Redshift model from 
+
+    .. math::
+        p(z|\kappa, t_{d, {\rm min}}, t_{d, {\rm max}}) &=
+
+    Parameters
+    ----------
+    tdmin: float
+        Minimum time-delay (in Gyr) between binary formation and merger.
+    tdmax: float
+        Maximum time-delay (in Gyr) between binary formation and merger.
+    kappa: float
+        Slope of the time-delay distribution.
+    z_peak: float
+        Redshift at which the distribution peaks.
+    z_max: float, optional
+        The maximum redshift allowed.
+    """
+
+    variable_names = ["tdmin", "kappa"]
     def __init__(self, z_max=2.3, z_max_sfr=15, tdmax = 13.8, n_td=1000):
         from astropy.cosmology import Planck15
         super().__init__(z_max=z_max)
