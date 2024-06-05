@@ -172,24 +172,46 @@ def MadauDickinsonSFR(z):
     return (1+z)**2.7 * (1 + ((1+z)/2.9)**5.6)**-1
 
 class DelayTimeRedshift(_Redshift):
+    r"""
+    Redshift model from 
+
+    .. math::
+        p(z|\kappa, t_{d, {\rm min}}, t_{d, {\rm max}}) &=
+
+    Parameters
+    ----------
+    tdmin: float
+        Minimum time-delay (in Gyr) between binary formation and merger.
+    tdmax: float
+        Maximum time-delay (in Gyr) between binary formation and merger.
+    kappa: float
+        Slope of the time-delay distribution.
+    z_peak: float
+        Redshift at which the distribution peaks.
+    z_max: float, optional
+        The maximum redshift allowed.
+    """
+
+    variable_names = ["tdmin", "kappa"]
     def __init__(self, z_max=2.3, z_max_sfr=15, tdmax = 13.8, n_td=1000):
         from astropy.cosmology import Planck15
         super().__init__(z_max=z_max)
         self.z_max_sfr = z_max_sfr
         self.zs_lookback_ = np.linspace(0.00001,z_max_sfr, 1000)
-        self.lookback_times_ = Planck15.lookback_time(self.zs_lookback_).value #in Gyr
+        self.lookback_times_ = xp.asarray(Planck15.lookback_time(self.zs_lookback_).value) #in Gyr
+        self.zs_lookback_xp = xp.asarray(self.zs_lookback_)
         self.tdmax = tdmax
         self.n_td = n_td
         self.cached_sfr = None
 
     def lookback_Gyr(self, redshift):
-        return np.interp(redshift, self.zs_lookback_, self.lookback_times_, left=0, right=np.inf)
+        return xp.interp(redshift, self.zs_lookback_xp, self.lookback_times_, left=0, right=xp.inf)
     
     def z_from_lookback(self, lookback_time):
         """
         Gives the redshift corresponding to a lookback time in Gyr
         """
-        return np.interp(lookback_time, self.lookback_times_, self.zs_lookback_, left=0, right=np.inf)
+        return xp.array(xp.interp(lookback_time, self.lookback_times_, self.zs_lookback_xp, left=0, right=xp.inf), dtype=xp.float32)
 
     def psi_of_z(self, redshift, **parameters):
         tdmin = parameters["tdmin"] # in Gyr
@@ -198,7 +220,7 @@ class DelayTimeRedshift(_Redshift):
         
         lookback_times = self.lookback_Gyr(redshift)
 
-        td_samples = sample_powerlaw(spectral_index=kappa, low=tdmin, high=self.tdmax, N=self.n_td)
+        td_samples = xp.asarray(sample_powerlaw(spectral_index=kappa, low=tdmin, high=self.tdmax, N=self.n_td))
         z_form = self.z_from_lookback(lookback_times + td_samples)
         psi_form = np.where(z_form < self.z_max_sfr, MadauDickinsonSFR(z_form), 0)
-        return np.average(psi_form, axis=-1)
+        return xp.average(psi_form, axis=-1)
