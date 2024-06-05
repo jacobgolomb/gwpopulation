@@ -299,10 +299,13 @@ def to_numpy(array):
         raise TypeError(f"Cannot convert {type(array)} to numpy array")
     
 def icdf_powerlaw(unit_value, alpha, low, high):
+    return xp.where(alpha == -1, low * xp.exp(unit_value * xp.log(high / low)), icdf_powerlaw_general(unit_value, alpha, low, high))
+
+def icdf_powerlaw_general(unit_value, alpha, low, high):
     oneplusalpha = 1 + alpha
-    a = low**oneplusalpha
-    b = high**oneplusalpha - a
-    return (a + b * unit_value)**(1/oneplusalpha)
+    a = xp.power(low, oneplusalpha)
+    b = xp.power(high, oneplusalpha - a)
+    return xp.power((a + b * unit_value), 1/oneplusalpha)
 
 
 def sample_powerlaw(spectral_index, low, high, N):
